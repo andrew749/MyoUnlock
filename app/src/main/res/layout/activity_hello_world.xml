@@ -8,11 +8,12 @@
 
     <TextView
         android:id="@+id/text"
-        android:text="@string/hello_world"
-        android:textSize="50dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        tools:ignore="SpUsage"/>
+        android:text="Not Connected"
+        android:textSize="50dp"
+        tools:ignore="SpUsage" />
+
 
 </FrameLayout>
