@@ -1,10 +1,11 @@
 package andrew749.com.myounlock;
 
-import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -22,7 +23,7 @@ import com.thalmic.myo.XDirection;
 /**
  * Created by Andrew on 9/20/2014.
  */
-public class MyoListenerService extends Service {
+public class MyoListenerService extends Service implements MySensor.Sensors {
     private final IBinder mBinder = new LocalBinder();
     boolean connected = false;
     private DeviceListener mListener = new AbstractDeviceListener() {
@@ -75,28 +76,20 @@ public class MyoListenerService extends Service {
             float roll = (float) Math.toDegrees(Quaternion.roll(rotation));
             float pitch = (float) Math.toDegrees(Quaternion.pitch(rotation));
             float yaw = (float) Math.toDegrees(Quaternion.yaw(rotation));
-            Log.e("Myo", "Pitch=" + pitch);
+//            Log.e("Myo", "Pitch=" + pitch);
             // Adjust roll and pitch for the orientation of the Myo on the arm.
             if (mXDirection == XDirection.TOWARD_ELBOW) {
                 roll *= -1;
                 pitch *= -1;
             }
             //add code to determine whether or not threshold is reached
+            if (MySensor.myoEvent(pitch)) {
 
+                unlockPhone();
+            }
         }
 
-        //method to unlock phone
-        private void unlockPhone() {
-            KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-            final KeyguardManager.KeyguardLock kl = km.newKeyguardLock("MyKeyguardLock");
-            kl.disableKeyguard();
 
-            PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
-            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
-            wl.acquire();
-
-
-        }
 
         // onPose() is called whenever a Myo provides a new pose.
         @Override
@@ -140,13 +133,29 @@ public class MyoListenerService extends Service {
     Hub hub;
     PowerManager.WakeLock wakeLock;
 
+    //method to unlock phone
+    private void unlockPhone() {
+        /*KeyguardManager km = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+        final KeyguardManager.KeyguardLock kl = km.newKeyguardLock("MyKeyguardLock");
+        kl.disableKeyguard();
+
+        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
+        wl.acquire();
+        Log.e("Myo","unlock");*/
+        PowerManager TempPowerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock TempWakeLock = TempPowerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "TempWakeLock");
+        TempWakeLock.acquire();
+
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         hub = Hub.getInstance();
         // Next, register for DeviceListener callbacks.
         hub.addListener(mListener);
 
-        return super.onStartCommand(intent, flags, startId);
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -160,7 +169,9 @@ public class MyoListenerService extends Service {
     @Override
     public void onCreate() {
         startForeground(100, new Notification());
-
+        SensorManager manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        Sensor sensor = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        manager.registerListener(new MySensor(this), sensor, SensorManager.SENSOR_DELAY_NORMAL);
         super.onCreate();
     }
 
@@ -174,6 +185,13 @@ public class MyoListenerService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
+    }
+
+    @Override
+    public void sensorChanged(boolean threshold) {
+        if (threshold) {
+            unlockPhone();
+        }
     }
 
     public class LocalBinder extends Binder {

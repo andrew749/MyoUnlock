@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        bindService(intent, mConnection, BIND_AUTO_CREATE);
+        bindService(intent, mConnection, 0);
 
         r.run();
     }
