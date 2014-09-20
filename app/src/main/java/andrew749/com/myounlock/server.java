@@ -10,7 +10,10 @@ import android.os.IBinder;
  * Created by Andrew on 9/20/2014.
  */
 public class server extends Service {
-
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return super.onStartCommand(intent, flags, startId);
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
