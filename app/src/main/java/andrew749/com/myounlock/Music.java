@@ -2,7 +2,6 @@ package andrew749.com.myounlock;
 
 import android.content.Context;
 import android.content.Intent;
-import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -50,8 +49,10 @@ public class Music {
             case THUMB_TO_PINKY:
                 Log.e("Myo", "thumb to pinky");
 
-                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.setClassName("com.google.android.googlequicksearchbox",
+                        "com.google.android.googlequicksearchbox.VoiceSearchActivity");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
                 break;
         }
