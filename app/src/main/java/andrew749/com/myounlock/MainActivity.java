@@ -47,13 +47,12 @@ public class MainActivity extends Activity {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MyoListenerService.LocalBinder binder = (MyoListenerService.LocalBinder) iBinder;
             service = binder.getService();
-            //TODO on connect
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     if (service.isConnected()) {
                         tv.setText("Connected");
-                        Log.e("myo", "meeewow");
+                        Log.e("myo", "connected");
                         handler.postDelayed(this, 2000);
                     } else {
                         tv.setText("Not connected");

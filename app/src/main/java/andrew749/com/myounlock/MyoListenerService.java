@@ -25,8 +25,6 @@ import com.thalmic.myo.XDirection;
 public class MyoListenerService extends Service {
     private final IBinder mBinder = new LocalBinder();
     boolean connected = false;
-    Hub hub;
-    PowerManager.WakeLock wakeLock;
     private DeviceListener mListener = new AbstractDeviceListener() {
 
         private Arm mArm = Arm.UNKNOWN;
@@ -38,9 +36,9 @@ public class MyoListenerService extends Service {
             // Set the text color of the text view to cyan when a Myo connects.
             Log.e("Myo:", "Connected");
             connected = true;
-            PowerManager mgr = (PowerManager) getApplication().getSystemService(Context.POWER_SERVICE);
-            wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
-            wakeLock.acquire();
+//            PowerManager mgr = (PowerManager) getApplication().getSystemService(Context.POWER_SERVICE);
+//            wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
+//            wakeLock.acquire();
         }
 
         // onDisconnect() is called whenever a Myo has been disconnected.
@@ -49,7 +47,7 @@ public class MyoListenerService extends Service {
             // Set the text color of the text view to red when a Myo disconnects.
             Log.e("Myo:", "Disconnected");
             connected = false;
-            wakeLock.release();
+//            wakeLock.release();
         }
 
         // onArmRecognized() is called whenever Myo has recognized a setup gesture after someone has put it on their
@@ -77,7 +75,7 @@ public class MyoListenerService extends Service {
             float roll = (float) Math.toDegrees(Quaternion.roll(rotation));
             float pitch = (float) Math.toDegrees(Quaternion.pitch(rotation));
             float yaw = (float) Math.toDegrees(Quaternion.yaw(rotation));
-
+            Log.e("Myo", "Pitch=" + pitch);
             // Adjust roll and pitch for the orientation of the Myo on the arm.
             if (mXDirection == XDirection.TOWARD_ELBOW) {
                 roll *= -1;
@@ -107,6 +105,7 @@ public class MyoListenerService extends Service {
             // based on the pose we receive.
             switch (pose) {
                 case UNKNOWN:
+                    Log.e("Myo", "Unknown");
                     break;
                 case REST:
                     int restTextId = R.string.hello_world;
@@ -118,26 +117,28 @@ public class MyoListenerService extends Service {
                             restTextId = R.string.arm_right;
                             break;
                     }
-                    Log.d("Myo:", "rest");
+                    Log.e("Myo:", "rest");
                     break;
                 case FIST:
-                    Log.d("Myo:", "Fist");
+                    Log.e("Myo:", "Fist");
                     break;
                 case WAVE_IN:
-                    Log.d("Myo", "wavein");
+                    Log.e("Myo", "wavein");
                     break;
                 case WAVE_OUT:
-                    Log.d("Myo", "waveout");
+                    Log.e("Myo", "waveout");
                     break;
                 case FINGERS_SPREAD:
-                    Log.d("Myo", "Fingers Spread");
+                    Log.e("Myo", "Fingers Spread");
                     break;
                 case THUMB_TO_PINKY:
-                    Log.d("Myo", "thumb to pinky");
+                    Log.e("Myo", "thumb to pinky");
                     break;
             }
         }
     };
+    Hub hub;
+    PowerManager.WakeLock wakeLock;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
