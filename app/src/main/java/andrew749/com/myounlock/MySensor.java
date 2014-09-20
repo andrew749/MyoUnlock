@@ -48,7 +48,7 @@ public class MySensor implements SensorEventListener {
     public static boolean myoEvent(float pitch) {
         currentTime = SystemClock.uptimeMillis();
         speed = (pitch - lastPitch) / (currentTime - lastMyoCall) * 1000;
-        Log.e("Myo", "pitch speed: " + speed + " over " + (currentTime - lastMyoCall) + "ms" + ": Accel X " + linear_acceleration[0]);
+        //Log.e("Myo", "pitch speed: " + speed + " over " + (currentTime - lastMyoCall) + "ms" + ": Accel X " + linear_acceleration[0]);
 
         if (Math.abs(speed) > 1000) {
             timeMyo = currentTime;

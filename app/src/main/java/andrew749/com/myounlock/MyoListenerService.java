@@ -94,42 +94,13 @@ public class MyoListenerService extends Service implements MySensor.Sensors {
         // onPose() is called whenever a Myo provides a new pose.
         @Override
         public void onPose(Myo myo, long timestamp, Pose pose) {
+            Log.e("Myo", "pose");
             // Handle the cases of the Pose enumeration, and change the text of the text view
             // based on the pose we receive.
-            switch (pose) {
-                case UNKNOWN:
-                    Log.e("Myo", "Unknown");
-                    break;
-                case REST:
-                    int restTextId = R.string.hello_world;
-                    switch (mArm) {
-                        case LEFT:
-                            restTextId = R.string.arm_left;
-                            break;
-                        case RIGHT:
-                            restTextId = R.string.arm_right;
-                            break;
-                    }
-                    Log.e("Myo:", "rest");
-                    break;
-                case FIST:
-                    Log.e("Myo:", "Fist");
-                    break;
-                case WAVE_IN:
-                    Log.e("Myo", "wavein");
-                    break;
-                case WAVE_OUT:
-                    Log.e("Myo", "waveout");
-                    break;
-                case FINGERS_SPREAD:
-                    Log.e("Myo", "Fingers Spread");
-                    break;
-                case THUMB_TO_PINKY:
-                    Log.e("Myo", "thumb to pinky");
-                    break;
-            }
+            music.handlePose(getApplicationContext(), pose);
         }
     };
+    Music music = new Music();
     Hub hub;
     PowerManager.WakeLock wakeLock;
 
