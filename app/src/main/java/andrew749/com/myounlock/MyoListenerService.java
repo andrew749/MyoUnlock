@@ -38,6 +38,9 @@ public class MyoListenerService extends Service {
             // Set the text color of the text view to cyan when a Myo connects.
             Log.e("Myo:", "Connected");
             connected = true;
+            PowerManager mgr = (PowerManager) getApplication().getSystemService(Context.POWER_SERVICE);
+            wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
+            wakeLock.acquire();
         }
 
         // onDisconnect() is called whenever a Myo has been disconnected.
@@ -46,6 +49,7 @@ public class MyoListenerService extends Service {
             // Set the text color of the text view to red when a Myo disconnects.
             Log.e("Myo:", "Disconnected");
             connected = false;
+            wakeLock.release();
         }
 
         // onArmRecognized() is called whenever Myo has recognized a setup gesture after someone has put it on their
@@ -79,7 +83,7 @@ public class MyoListenerService extends Service {
                 roll *= -1;
                 pitch *= -1;
             }
-
+            //add code to determine whether or not threshold is reached
 
         }
 
@@ -89,9 +93,10 @@ public class MyoListenerService extends Service {
             final KeyguardManager.KeyguardLock kl = km.newKeyguardLock("MyKeyguardLock");
             kl.disableKeyguard();
 
-            PowerManager mgr = (PowerManager) getApplication().getSystemService(Context.POWER_SERVICE);
-            wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
-            wakeLock.acquire();
+            PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
+            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
+            wl.acquire();
+
 
         }
 
@@ -159,9 +164,7 @@ public class MyoListenerService extends Service {
     }
 
     /**
-     * @return returns 0 if not connected
-     * 1 if connecting
-     * 2 if connected
+
      */
     public boolean isConnected() {
         return connected;

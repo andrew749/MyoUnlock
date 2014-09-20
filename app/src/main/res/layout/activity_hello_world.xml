@@ -15,5 +15,12 @@
         android:textSize="50dp"
         tools:ignore="SpUsage" />
 
+    <Button
+        android:id="@+id/disconnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:text="Disconnect" />
+
 
 </FrameLayout>

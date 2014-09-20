@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.thalmic.myo.Hub;
@@ -79,7 +81,13 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hello_world);
         tv = (TextView) findViewById(R.id.text);
-
+        Button b = (Button) findViewById(R.id.disconnect);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Hub.getInstance().unpair(Hub.getInstance().getConnectedDevices().get(0).getMacAddress());
+            }
+        });
         // First, we initialize the Hub singleton with an application identifier.
         Hub hub = Hub.getInstance();
         if (!hub.init(this)) {
