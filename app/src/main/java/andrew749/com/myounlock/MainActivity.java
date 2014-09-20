@@ -136,7 +136,7 @@ public class MainActivity extends Activity {
 
         // First, we initialize the Hub singleton with an application identifier.
         Hub hub = Hub.getInstance();
-        if (!hub.init(this,"MyoUnlock")) {
+        if (!hub.init(this)) {
             // We can't do anything with the Myo device if the Hub can't be initialized, so exit.
             Toast.makeText(this, "Couldn't initialize Hub", Toast.LENGTH_SHORT).show();
             finish();
