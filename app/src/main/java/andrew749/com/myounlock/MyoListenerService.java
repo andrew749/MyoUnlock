@@ -24,10 +24,11 @@ import com.thalmic.myo.XDirection;
  * Created by Andrew on 9/20/2014.
  */
 public class MyoListenerService extends Service implements MySensor.Sensors {
+    public static boolean fist = false;
+    public static boolean gnow = true, musiccontrol = true, wake = true;
     private final IBinder mBinder = new LocalBinder();
     boolean connected = false;
     private DeviceListener mListener = new AbstractDeviceListener() {
-
         private Arm mArm = Arm.UNKNOWN;
         private XDirection mXDirection = XDirection.UNKNOWN;
 
@@ -72,23 +73,24 @@ public class MyoListenerService extends Service implements MySensor.Sensors {
         // represented as a quaternion.
         @Override
         public void onOrientationData(Myo myo, long timestamp, Quaternion rotation) {
-            // Calculate Euler angles (roll, pitch, and yaw) from the quaternion.
-            float roll = (float) Math.toDegrees(Quaternion.roll(rotation));
-            float pitch = (float) Math.toDegrees(Quaternion.pitch(rotation));
-            float yaw = (float) Math.toDegrees(Quaternion.yaw(rotation));
+            if (wake) {
+                // Calculate Euler angles (roll, pitch, and yaw) from the quaternion.
+                float roll = (float) Math.toDegrees(Quaternion.roll(rotation));
+                float pitch = (float) Math.toDegrees(Quaternion.pitch(rotation));
+                float yaw = (float) Math.toDegrees(Quaternion.yaw(rotation));
 //            Log.e("Myo", "Pitch=" + pitch);
-            // Adjust roll and pitch for the orientation of the Myo on the arm.
-            if (mXDirection == XDirection.TOWARD_ELBOW) {
-                roll *= -1;
-                pitch *= -1;
-            }
-            //add code to determine whether or not threshold is reached
-            if (MySensor.myoEvent(pitch)) {
+                // Adjust roll and pitch for the orientation of the Myo on the arm.
+                if (mXDirection == XDirection.TOWARD_ELBOW) {
+                    roll *= -1;
+                    pitch *= -1;
+                }
+                //add code to determine whether or not threshold is reached
+                if (MySensor.myoEvent(pitch)) {
 
-                unlockPhone();
+                    unlockPhone();
+                }
             }
         }
-
 
 
         // onPose() is called whenever a Myo provides a new pose.
@@ -110,10 +112,7 @@ public class MyoListenerService extends Service implements MySensor.Sensors {
         final KeyguardManager.KeyguardLock kl = km.newKeyguardLock("MyKeyguardLock");
         kl.disableKeyguard();
 
-        PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
-        wl.acquire();
-        Log.e("Myo","unlock");*/
+        */
         PowerManager TempPowerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock TempWakeLock = TempPowerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "TempWakeLock");
         TempWakeLock.acquire();
@@ -162,6 +161,21 @@ public class MyoListenerService extends Service implements MySensor.Sensors {
     public void sensorChanged(boolean threshold) {
         if (threshold) {
             unlockPhone();
+        }
+    }
+
+
+    public void radioChanged(int i) {
+        switch (i) {
+            case 0:
+                musiccontrol = !musiccontrol;
+                break;
+            case 1:
+                gnow = !gnow;
+                break;
+            case 2:
+                wake = !wake;
+                break;
         }
     }
 

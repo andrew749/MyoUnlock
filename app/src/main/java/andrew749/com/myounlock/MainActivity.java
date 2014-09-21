@@ -14,19 +14,26 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.thalmic.myo.Hub;
 import com.thalmic.myo.scanner.ScanActivity;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements CompoundButton.OnCheckedChangeListener {
 
     // This code will be returned in onActivityResult() when the enable Bluetooth activity exits.
     private static final int REQUEST_ENABLE_BT = 1;
     // Classes that inherit from AbstractDeviceListener can be used to receive events from Myo devices.
     // If you do n ot override an event, the default behavior is to do nothing.
     TextView tv;
+    /**
+     * music 0 google now 1 wake 2
+     */
+
+
     private Handler handler = new Handler();
     private MyoListenerService service;
     Runnable r = new Runnable() {
@@ -65,7 +72,29 @@ public class MainActivity extends Activity {
         public void onServiceDisconnected(ComponentName componentName) {
         }
     };
+    private ToggleButton gnow, musiccontrol, wake;
     private Intent intent;
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        if (service != null) {
+
+
+            switch (compoundButton.getId()) {
+                case R.id.musicradio:
+                    service.radioChanged(0);
+                    break;
+                case R.id.gnowradio:
+                    service.radioChanged(1);
+                    break;
+                case R.id.wakeradio:
+                    service.radioChanged(2);
+
+                    break;
+
+            }
+        }
+    }
 
     @Override
     protected void onStart() {
@@ -81,10 +110,17 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_hello_world);
         tv = (TextView) findViewById(R.id.text);
         Button b = (Button) findViewById(R.id.disconnect);
+        gnow = (ToggleButton) findViewById(R.id.gnowradio);
+        wake = (ToggleButton) findViewById(R.id.wakeradio);
+        musiccontrol = (ToggleButton) findViewById(R.id.musicradio);
+        gnow.setOnCheckedChangeListener(this);
+        wake.setOnCheckedChangeListener(this);
+        musiccontrol.setOnCheckedChangeListener(this);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Hub.getInstance().unpair(Hub.getInstance().getConnectedDevices().get(0).getMacAddress());
+                if (Hub.getInstance().getConnectedDevices().size() > 0)
+                    Hub.getInstance().unpair(Hub.getInstance().getConnectedDevices().get(0).getMacAddress());
             }
         });
         // First, we initialize the Hub singleton with an application identifier.

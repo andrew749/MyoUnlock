@@ -23,37 +23,45 @@ public class Music {
     }
 
     public void handlePose(Context context, Pose pose) {
+        MyoListenerService.fist = false;
 
         switch (pose) {
-
             case FIST:
                 Log.e("Myo:", "Fist");
-
+                MyoListenerService.fist = true;
                 break;
             case WAVE_IN:
-                Log.e("Myo", "wavein");
-                //this is previous
-                sendMediaButton(context, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+                if (MyoListenerService.musiccontrol) {
+                    Log.e("Myo", "wavein");
+                    //this is previous
+                    sendMediaButton(context, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+                }
 
                 break;
             case WAVE_OUT:
-                Log.e("Myo", "waveout");
-                //this is next
-                sendMediaButton(context, KeyEvent.KEYCODE_MEDIA_NEXT);
+                if (MyoListenerService.musiccontrol) {
+                    Log.e("Myo", "waveout");
+                    //this is next
+                    sendMediaButton(context, KeyEvent.KEYCODE_MEDIA_NEXT);
+                }
 
                 break;
             case FINGERS_SPREAD:
-                Log.e("Myo", "Fingers Spread");
-                sendMediaButton(context, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+                if (MyoListenerService.musiccontrol) {
+                    Log.e("Myo", "Fingers Spread");
+                    sendMediaButton(context, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+                }
                 break;
             case THUMB_TO_PINKY:
-                Log.e("Myo", "thumb to pinky");
+                if (MyoListenerService.gnow) {
+                    Log.e("Myo", "thumb to pinky");
 
-                Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.setClassName("com.google.android.googlequicksearchbox",
-                        "com.google.android.googlequicksearchbox.VoiceSearchActivity");
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                    intent.setClassName("com.google.android.googlequicksearchbox",
+                            "com.google.android.googlequicksearchbox.VoiceSearchActivity");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }
                 break;
         }
 
